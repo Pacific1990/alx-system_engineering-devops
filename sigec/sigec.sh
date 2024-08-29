@@ -19,11 +19,8 @@ response=$(curl -s -X GET -H "Authorization: Bearer $token" -H "Content-Type: ap
 # Afficher la réponse
 # echo "Réponse de l'API : $response"
 
-year=$(echo $response | jq -r '.data.start')
+# year=$(echo $response | jq -r '.data.start')
 # echo "Annee scolaire : $year"
-
-#!/bin/bash
-
 
 # Lire le nom principal
 base_name=$(jq -r '.data.name' "$response")
@@ -31,6 +28,7 @@ base_name=$(replace_spaces "$base_name")
 
 # Créer le dossier principal
 mkdir -p "$base_name"
+echo "Dossier de base : $base_name"
 
 # Lire les niveaux
 jq -c '.data.levels[]' "$response" | while read -r level; do
