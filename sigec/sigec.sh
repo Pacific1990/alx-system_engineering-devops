@@ -2,6 +2,7 @@
 
 # Importation du checker
 . ./checker.sh
+. ./functions.sh
 
 # URL de l'API
 url="https://sigec.ipnetp.cloud/api/quiz"
@@ -19,4 +20,45 @@ response=$(curl -s -X GET -H "Authorization: Bearer $token" -H "Content-Type: ap
 # echo "Réponse de l'API : $response"
 
 year=$(echo $response | jq -r '.data.start')
-echo "Annee scolaire : $year"
+# echo "Annee scolaire : $year"
+
+#!/bin/bash
+
+
+# Lire le nom principal
+base_name=$(jq -r '.data.name' "$response")
+base_name=$(replace_spaces "$base_name")
+
+# Créer le dossier principal
+mkdir -p "$base_name"
+
+# Lire les niveaux
+jq -c '.data.levels[]' "$response" | while read -r level; do
+    level_name=$(echo "$level" | jq -r '.name')
+    level_name=$(replace_spaces "$level_name")
+    
+    # Créer le sous-dossier pour chaque niveau
+    level_path="$base_name/$level_name"
+    mkdir -p "$level_path"
+
+    # Lire les examens dans le niveau
+    echo "$level" | jq -c '.exams[]' | while read -r exam; do
+        exam_name=$(echo "$exam" | jq -r '.specialty_name')
+        exam_name=$(replace_spaces "$exam_name")
+        
+        # Créer le sous-dossier pour chaque examen
+        mkdir -p "$level_path/$exam_name"
+
+        # Lire les examens dans le niveau
+        echo "$exam" | jq -c '.rooms[]' | while read -r room; do
+            room_name=$(echo "$room" | jq -r '.name')
+            room_name=$(replace_spaces "$name")
+            
+            # Créer le sous-dossier pour chaque examen
+            mkdir -p "$exam_path/$room_name"
+        done
+    done
+done
+
+echo "Dossiers créés avec succès."
+
