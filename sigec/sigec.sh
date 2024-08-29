@@ -23,7 +23,8 @@ response=$(curl -s -X GET -H "Authorization: Bearer $token" -H "Content-Type: ap
 # echo "Annee scolaire : $year"
 
 # Lire le nom principal
-base_name=$(jq -r '.data.name' "$response")
+# base_name=$(jq -r '.data.name' "$response")
+base_name=$(echo $response | jq -r '.data.start')
 base_name=$(replace_spaces "$base_name")
 
 # Créer le dossier principal
